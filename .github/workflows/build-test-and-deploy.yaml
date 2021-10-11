@@ -1,0 +1,34 @@
+name: Pull Request Action
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test-and-deploy:
+    name: Build, Test, & Deploy
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancel Previous Action
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Start Containers and Run Tests
+        run: sudo docker compose -f docker-compose.test.yml run --rm tests
+
+      - name: Clover Code Coverage Report
+        uses: danhunsaker/clover-reporter-action@v0.2.17-clover
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Stop containers
+      #   if: always()
+      #   run: docker compose -f docker-compose.test.yml down
