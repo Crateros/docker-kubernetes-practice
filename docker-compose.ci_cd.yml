@@ -1,5 +1,15 @@
 version: '3'
 services:
+  web-app:
+    build:
+      # Context specifies where all of the files should come from
+      context: .
+      dockerfile: Dockerfile.coverage
+    volumes:
+      - /app/node_modules
+      - .:/app
+    command: ["npm", "run", "build"]
+
   tests:
     build:
       # Context specifies where all of the files should come from
